@@ -1,0 +1,31 @@
+{
+	"name": "lml",
+	"version": "1.0.0",
+	"description": "Learning Machine Learning",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"fifa": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.ts"
+	},
+	"dependencies": {
+		"lodash": "^4.17.11"
+	},
+	"devDependencies": {
+		"@types/lodash": "^4.14.123",
+		"@types/node": "^10.14.4",
+		"nodemon": "^1.18.10",
+		"ts-node": "^8.0.3",
+		"tslint": "^5.14.0",
+		"typescript": "^3.4.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/alirizadikici/lml.git"
+	},
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/alirizadikici/lml/issues"
+	},
+	"homepage": "https://github.com/alirizadikici/lml#readme"
+}
