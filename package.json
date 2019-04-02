@@ -8,6 +8,7 @@
 		"fifa": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.ts"
 	},
 	"dependencies": {
+		"csv-parser": "^2.2.0",
 		"lodash": "^4.17.11"
 	},
 	"devDependencies": {
