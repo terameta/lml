@@ -5,9 +5,11 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"fifa": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.ts"
+		"fifa": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.ts",
+		"fifatf": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.tf.ts"
 	},
 	"dependencies": {
+		"@tensorflow/tfjs-node": "^1.0.3",
 		"csv-parser": "^2.2.0",
 		"lodash": "^4.17.11"
 	},
