@@ -5,8 +5,9 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"fifa": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.ts",
-		"fifatf": "nodemon -w ./fifa -e ts,json --exec ts-node -T fifa/fifa.tf.ts"
+		"fifa": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/fifa.ts",
+		"fifatf": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/fifa.tf.ts",
+		"hpr": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/house.price.regression.01.ts"
 	},
 	"dependencies": {
 		"@tensorflow/tfjs-node": "^1.0.3",
@@ -16,10 +17,10 @@
 	"devDependencies": {
 		"@types/lodash": "^4.14.123",
 		"@types/node": "^10.14.4",
-		"nodemon": "^1.18.10",
+		"nodemon": "^1.18.11",
 		"ts-node": "^8.0.3",
-		"tslint": "^5.14.0",
-		"typescript": "^3.4.1"
+		"tslint": "^5.15.0",
+		"typescript": "^3.4.3"
 	},
 	"repository": {
 		"type": "git",

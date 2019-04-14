@@ -46,5 +46,6 @@
 	"zenMode.hideTabs": false,
 	"zenMode.hideStatusBar": false,
 	"zenMode.hideActivityBar": false,
-	"editor.showUnused": true
+	"editor.showUnused": true,
+	"typescript.tsdk": "node_modules\\typescript\\lib"
 }
