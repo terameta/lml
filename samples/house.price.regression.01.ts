@@ -18,14 +18,12 @@ const run = async () => {
 	console.log( '--- Size of the test data set:', testSet.length );
 	console.log( '--- We are trying to calculate MPG as a function of Horsepower ---' );
 	console.log( '--- MPG = m * HP + b' );
-	// console.table( testSet );
+	// // console.table( testSet );
 	const features = ones( [trainingSet.length, 1] ).concat( tensor( trainingSet.map( t => [t.horsepower] ) ), 1 );
-	const testFeatures = ones( [testSet.length, 1] ).concat( tensor( testSet.map( t => [t.horsepower] ) ) );
+	const testFeatures = ones( [testSet.length, 1] ).concat( tensor( testSet.map( t => [t.horsepower] ) ), 1 );
 	const labels = tensor( trainingSet.map( t => [t.mpg] ) );
 	const testLabels = tensor( testSet.map( t => [t.mpg] ) );
-	features.print();
-	console.log( memory() );
-	// ones( [features.shape[0], 1] ).concat( features, 1 ).print();
+	// // ones( [features.shape[0], 1] ).concat( features, 1 ).print();
 
 	const regression = new LinearRegression( features, labels, { learningRate: .0001, maxIterations: 1 } );
 	regression.train();

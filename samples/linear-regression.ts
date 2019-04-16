@@ -24,26 +24,33 @@ export class LinearRegression {
 	}
 
 	private gradientDescent = async () => {
+		console.log( 'Weights' );
+		this.weights.print();
 		const guesses = this.features.matMul( this.weights );
+		console.log( 'Features' );
+		this.features.print();
+		console.log( 'Guesses' );
+		guesses.print();
 		const differences = guesses.sub( this.labels );
+		console.log( 'Differences' );
 		differences.print();
-		this.features.
-			transpose().
-			matMul( differences ).
-			div( this.sampleSize ).
-			print();
 		// this.features.
 		// 	transpose().
 		// 	matMul( differences ).
-		// 	div( this.n );
+		// 	div( this.sampleSize ).
+		// 	print();
+		// // this.features.
+		// // 	transpose().
+		// // 	matMul( differences ).
+		// // 	div( this.n );
 
 
-		// // const currentGuessesForMPG = this.features.map( row => this.m * row[0] + this.b );
-		// // const bSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => guess - this.labels[i][0] ) ) / this.features.length;
-		// // const mSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => ( guess - this.labels[i][0] ) * this.features[i][0] ) ) / this.features.length;
-		// // this.b -= bSlope * this.options.learningRate;
-		// // this.m -= mSlope * this.options.learningRate;
-		// // // console.log( 'MS:', mSlope.toFixed( 8 ), 'M:', this.m.toFixed( 8 ), 'BS:', bSlope.toFixed( 8 ), 'B:', this.b.toFixed( 8 ) );
+		// // // const currentGuessesForMPG = this.features.map( row => this.m * row[0] + this.b );
+		// // // const bSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => guess - this.labels[i][0] ) ) / this.features.length;
+		// // // const mSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => ( guess - this.labels[i][0] ) * this.features[i][0] ) ) / this.features.length;
+		// // // this.b -= bSlope * this.options.learningRate;
+		// // // this.m -= mSlope * this.options.learningRate;
+		// // // // console.log( 'MS:', mSlope.toFixed( 8 ), 'M:', this.m.toFixed( 8 ), 'BS:', bSlope.toFixed( 8 ), 'B:', this.b.toFixed( 8 ) );
 	}
 }
 
