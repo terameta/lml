@@ -25,10 +25,11 @@ const run = async () => {
 	const testLabels = tensor( testSet.map( t => [t.mpg] ) );
 	// // ones( [features.shape[0], 1] ).concat( features, 1 ).print();
 
-	const regression = new LinearRegression( features, labels, { learningRate: .0001, maxIterations: 1 } );
-	regression.train();
-	// console.log( regression.weights.print() );
-
+	const regression = new LinearRegression( features, labels, { learningRate: .0001, maxIterations: 1000 } );
+	await regression.train();
+	regression.weights.print();
+	// await testFeatures.matMul( regression.weights ).sub( testLabels ).array().then( console.log );
+	console.log( await regression.test( testFeatures, testLabels ) );
 }
 
 

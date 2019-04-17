@@ -1,56 +1,49 @@
-import { Tensor, zeros } from '@tensorflow/tfjs';
-import * as _ from 'lodash';
+import { Tensor, zeros, moments } from '@tensorflow/tfjs';
 
 export class LinearRegression {
-
-	public m: number = 0;
-	public b: number = 0;
 
 	public weights: Tensor;
 	private sampleSize = 0;
 	private numberOfFeatures = 0;
+	private mean: number;
+	private stddev: number;
 
 	constructor( private features: Tensor, private labels: Tensor, private options: LinearRegressionOptions = {} ) {
 		this.options = { learningRate: 0.1, maxIterations: 1000, ...options };
 		this.sampleSize = this.features.shape[0];
 		this.numberOfFeatures = this.features.shape[1];
 		this.weights = zeros( [this.numberOfFeatures, 1] );
+		this.prepareFeatures( features );
+	}
+
+	private prepareFeatures = async ( f: Tensor, shouldSet = false ) => {
+		const { mean, variance } = await moments( f );
+		this.mean = ( await mean.array() as number );
+		this.stddev = Math.pow( ( await variance.array() as number ), .5 );
+		console.log( this.mean, this.stddev, ( await variance.array() ) );
 	}
 
 	public train = async () => {
 		for ( let i = 0; i < this.options.maxIterations; i++ ) {
-			this.gradientDescent();
+			await this.gradientDescent();
 		}
 	}
 
 	private gradientDescent = async () => {
-		console.log( 'Weights' );
-		this.weights.print();
 		const guesses = this.features.matMul( this.weights );
-		console.log( 'Features' );
-		this.features.print();
-		console.log( 'Guesses' );
-		guesses.print();
 		const differences = guesses.sub( this.labels );
-		console.log( 'Differences' );
-		differences.print();
-		// this.features.
-		// 	transpose().
-		// 	matMul( differences ).
-		// 	div( this.sampleSize ).
-		// 	print();
-		// // this.features.
-		// // 	transpose().
-		// // 	matMul( differences ).
-		// // 	div( this.n );
+		const slopes = this.features.transpose().matMul( differences ).div( this.features.shape[0] ).mul( this.options.learningRate );
+		this.weights = this.weights.sub( slopes );
+	}
 
-
-		// // // const currentGuessesForMPG = this.features.map( row => this.m * row[0] + this.b );
-		// // // const bSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => guess - this.labels[i][0] ) ) / this.features.length;
-		// // // const mSlope = _.sum( currentGuessesForMPG.map( ( guess, i ) => ( guess - this.labels[i][0] ) * this.features[i][0] ) ) / this.features.length;
-		// // // this.b -= bSlope * this.options.learningRate;
-		// // // this.m -= mSlope * this.options.learningRate;
-		// // // // console.log( 'MS:', mSlope.toFixed( 8 ), 'M:', this.m.toFixed( 8 ), 'BS:', bSlope.toFixed( 8 ), 'B:', this.b.toFixed( 8 ) );
+	public test = async ( testFeatures: Tensor, testLabels: Tensor ) => {
+		// testFeatures.print();
+		// testLabels.print();
+		const sstot = ( await testLabels.sub( testLabels.mean() ).pow( 2 ).sum().array() as number );
+		const ssres = ( await testLabels.sub( testFeatures.matMul( this.weights ) ).pow( 2 ).sum().array() as number );
+		console.log( ssres, 'vs', sstot );
+		const rSquared = 1 - ssres / sstot;
+		return rSquared;
 	}
 }
 
