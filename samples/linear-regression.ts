@@ -1,4 +1,5 @@
 import { Tensor, zeros, moments } from '@tensorflow/tfjs';
+import * as plot from 'node-remote-plot';
 
 export class LinearRegression {
 
@@ -7,6 +8,10 @@ export class LinearRegression {
 	private numberOfFeatures = 0;
 	private mean: Tensor;
 	private stddev: Tensor;
+	private msePrev = 0;
+	private mseCurr = 0;
+	private mseHistory = [];
+	private learningRateHistory = [];
 
 	private features: Tensor;
 
@@ -33,6 +38,12 @@ export class LinearRegression {
 		for ( let i = 0; i < this.options.maxIterations; i++ ) {
 			await this.gradientDescent();
 		}
+		plot( {
+			x: this.mseHistory.reverse(),
+			y: this.learningRateHistory,
+			xLabel: 'MSE',
+			yLabel: 'Learning Rate'
+		} );
 	}
 
 	private waiter = ( timeout = 500 ) => {
@@ -48,6 +59,16 @@ export class LinearRegression {
 		const differences = guesses.sub( this.labels );
 		const slopes = this.features.transpose().matMul( differences ).div( this.features.shape[0] ).mul( this.options.learningRate );
 		this.weights = this.weights.sub( slopes );
+		this.msePrev = this.mseCurr;
+		this.mseCurr = ( await differences.sum().pow( 2 ).div( differences.shape[0] ).array() ) as any;
+		this.mseHistory.unshift( this.mseCurr );
+		if ( this.mseCurr && this.msePrev ) {
+			if ( this.mseCurr > this.msePrev ) this.options.learningRate *= 0.95;
+			if ( this.mseCurr < this.msePrev ) this.options.learningRate *= 1.05;
+		}
+		this.learningRateHistory.push( this.options.learningRate );
+		// differences.sum().pow( 2 ).div( differences.shape[0] ).array().then( console.log );
+		// console.log( this.options.learningRate, this.mseCurr, this.msePrev );
 	}
 
 	public test = async ( testFeatures: Tensor, testLabels: Tensor ) => {
