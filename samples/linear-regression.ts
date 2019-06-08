@@ -54,10 +54,10 @@ export class LinearRegression {
 		} );
 	}
 
-	private gradientDescent = async () => {
-		const guesses = this.features.matMul( this.weights );
-		const differences = guesses.sub( this.labels );
-		const slopes = this.features.transpose().matMul( differences ).div( this.features.shape[0] ).mul( this.options.learningRate );
+	private gradientDescent = async ( features: Tensor, labels: Tensor ) => {
+		const guesses = features.matMul( this.weights );
+		const differences = guesses.sub( labels );
+		const slopes = features.transpose().matMul( differences ).div( features.shape[0] ).mul( this.options.learningRate );
 		this.weights = this.weights.sub( slopes );
 		this.msePrev = this.mseCurr;
 		this.mseCurr = ( await differences.sum().pow( 2 ).div( differences.shape[0] ).array() ) as any;
