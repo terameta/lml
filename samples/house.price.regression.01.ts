@@ -1,7 +1,7 @@
 require( '@tensorflow/tfjs-node' );
 import { readCSV } from "../utilities/readcsv";
 import * as _ from 'lodash';
-import { tensor, onesLike, ones, memory, moments } from '@tensorflow/tfjs';
+import { tensor, tensor2d, onesLike, ones, memory, moments } from '@tensorflow/tfjs';
 import { LinearRegression } from './linear-regression';
 
 console.clear();
@@ -40,11 +40,15 @@ const run = async () => {
 	const testLabels = tensor( testSet.map( t => [t.mpg] ) );
 	// // ones( [features.shape[0], 1] ).concat( features, 1 ).print();
 
-	const regression = new LinearRegression( features, labels, { learningRate: .001, maxIterations: 1000 } );
+	const regression = new LinearRegression( features, labels, { learningRate: .5, maxIterations: 128, batchSize: 32 } );
 	await regression.train();
 	regression.weights.print();
 	// await testFeatures.matMul( regression.weights ).sub( testLabels ).array().then( console.log );
 	console.log( 'R2:', await regression.test( testFeatures, testLabels ) );
+	console.log( 'Infering:' );
+	console.log( ( await tensor2d( [1, 88, 1.1395, 97], [1, 4] ).array() )[0] );
+	regression.predict( tensor2d( [1, 88, 1.1395, 97], [1, 4] ) ).print();
+	// features.slice( 0, 1 ).print();
 }
 
 

@@ -8,7 +8,9 @@
 		"fifa": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/fifa.ts",
 		"fifatf": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/fifa.tf.ts",
 		"hpr": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/house.price.regression.01.ts",
-		"quiz": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/quiz.ts"
+		"hpr2": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/house.price.regression.02.ts",
+		"quiz": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/quiz.ts",
+		"lr": "nodemon -w ./samples -e ts,json --exec ts-node -T samples/car-emission.ts"
 	},
 	"dependencies": {
 		"@tensorflow/tfjs-node": "^1.1.2",

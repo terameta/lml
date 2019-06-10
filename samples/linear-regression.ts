@@ -34,9 +34,14 @@ export class LinearRegression {
 
 	public train = async () => {
 		while ( !this.features ) { await this.waiter(); }
-		// this.features.print();
+		const batchQuantity = Math.floor( this.features.shape[0] / this.options.batchSize );
 		for ( let i = 0; i < this.options.maxIterations; i++ ) {
-			await this.gradientDescent();
+			for ( let j = 0; j < batchQuantity; j++ ) {
+				await this.gradientDescent(
+					this.features.slice( [j * this.options.batchSize, 0], [this.options.batchSize, -1] ), // Feature slice
+					this.labels.slice( [j * this.options.batchSize, 0], [this.options.batchSize, -1] ) 		// label slice
+				);
+			}
 		}
 		plot( {
 			x: this.mseHistory.reverse(),
@@ -79,13 +84,18 @@ export class LinearRegression {
 		// testFeatures.print();
 		const sstot = ( await testLabels.sub( testLabels.mean() ).pow( 2 ).sum().array() as number );
 		const ssres = ( await testLabels.sub( testFeatures.matMul( this.weights ) ).pow( 2 ).sum().array() as number );
-		// console.log( ssres, 'vs', sstot );
+		console.log( ssres, 'vs', sstot );
 		const rSquared = 1 - ssres / sstot;
 		return rSquared;
+	}
+
+	public predict = ( observation: Tensor ): Tensor => {
+		return observation.matMul( this.weights );
 	}
 }
 
 export interface LinearRegressionOptions {
 	maxIterations?: number,
-	learningRate?: number
+	learningRate?: number,
+	batchSize?: number
 }
