@@ -2,6 +2,7 @@ require( '@tensorflow/tfjs-node' );
 import * as tf from '@tensorflow/tfjs';
 import { readCSV } from "../utilities/readcsv";
 import { splitDataSet } from "../utilities/splitter";
+import { LogisticRegression } from './logistic-regression';
 
 // import * as _ from 'lodash';
 // import { tensor, onesLike, ones, memory, moments, tensor2d, sequential, layers, losses, Tensor2D } from '@tensorflow/tfjs';
@@ -18,13 +19,44 @@ const init = async () => {
 	} ) );
 	// dataSet.forEach( rds => console.log( rds ) );
 	const [testSet, trainingSet] = splitDataSet( dataSet, 13 );
+	// trainingSet.forEach( rds => console.log( rds ) );
 	console.log( '--- Size of the main data set:', dataSet.length );
 	console.log( '--- Size of the training data set:', trainingSet.length );
 	console.log( '--- Size of the test data set:', testSet.length );
 	console.log( '--- We are trying to calculate if the emission test is passed' );
+	const regression = new LogisticRegression(
+		trainingSet.map( t => [t.horsepower, t.displacement, t.weight] ),
+		trainingSet.map( t => t.passed ),
+		{ learningRate: 0.5, iterations: 100, batchSize: 50 }
+	);
+
+	await regression.train();
+	console.log( await regression.predict( [130, 307, 1.75] ), 'supposed to be 0' );
+	console.log( await regression.predict( [88, 97, 1.065] ), 'supposed to be 1' );
+	const testResults = regression.test(
+		testSet.map( t => [t.horsepower, t.displacement, t.weight] ),
+		testSet.map( t => t.passed )
+	);
+	console.log( testResults );
 }
 
 init();
+
+const init2 = async () => {
+	console.clear();
+	console.log( '=== We are starting Logistic Regression' );
+	const weights = tf.tensor( [[1], [.000001]] );
+	const features = tf.tensor( [
+		[1, 95],
+		[1, 120],
+		[1, 135],
+		[1, 175]
+	] );
+
+	features.matMul( weights ).sigmoid().print();
+}
+
+// init2();
 
 
 // const initTF = async () => {

@@ -1,8 +1,68 @@
 require( '@tensorflow/tfjs-node' );
+import { Tensor, moments, zeros, tensor } from '@tensorflow/tfjs';
 
 export class LogisticRegression {
+	private options: RegressionOptions = {};
+	private weights: Tensor;
+	private features: Tensor;
+	private labels: Tensor;
 
+	constructor( features: number[][], labels: number[], options: RegressionOptions = {} ) {
+		this.options = { learningRate: .1, iterations: 100, batchSize: 32, ...options };
+		this.weights = zeros( [this.features.shape[1], 1] );
+		this.labels = tensor( labels );
+	}
+
+	private prepareFeatures = async ( f: Tensor, shouldSet = false ) => {
+		// if ( !this.mean ) {
+		// 	const { mean, variance } = await moments( f, 0 );
+		// 	this.mean = mean;
+		// 	this.stddev = variance.pow( .5 );
+		// }
+		// return f.sub( this.mean ).div( this.stddev );
+	}
+
+	private gradientDescent = async ( features: Tensor, labels: Tensor ) => {
+		const currentGuesses = features.matMul( this.weights ).sigmoid();
+		const differences = currentGuesses.sub( labels );
+
+		const slopes = features.transpose().matMul( differences ).div( features.shape[0] );
+
+		this.weights = this.weights.sub( slopes.mul( this.options.learningRate ) );
+	}
+
+	public train = async () => {
+		const batchQuantity = Math.floor( this.features.shape[0] / this.options.batchSize );
+		const batchSize = this.options.batchSize;
+
+		for ( let i = 0; i < this.options.iterations; i++ ) {
+			for ( let j = 0; j < batchQuantity; j++ ) {
+				const startIndex = j * batchSize;
+				const featureSlice = this.features.slice( [startIndex, 0], [batchSize, -1] );
+				const labelSlice = this.labels.slice( [startIndex, 0], [batchSize, -1] );
+
+				this.gradientDescent( featureSlice, labelSlice );
+			}
+
+			this.recordMSE();
+			this.updateLearningRate();
+		}
+	}
+
+	public predict = async ( observations ) => {
+		return this.processFeatures( observations ).matMul( this.weights ).sigmoid();
+	}
+
+	public test = async ( testFeatures, testLabels ) => {
+		const predictions = this.predict( testFeatures ).round();
+		const testLabels = tensor( testLabels );
+
+		const incorrect = predictions.sub( testLabels ).abs().sum().dataSync();
+
+		return ( predictions.shape[0] - incorrect ) / predictions.shape[0];
+	}
 }
+
 
 // import { Tensor, zeros, moments } from '@tensorflow/tfjs';
 // import * as plot from 'node-remote-plot';
@@ -29,14 +89,7 @@ export class LogisticRegression {
 // 		this.weights = zeros( [this.numberOfFeatures, 1] );
 // 	}
 
-// 	private prepareFeatures = async ( f: Tensor, shouldSet = false ) => {
-// 		if ( !this.mean ) {
-// 			const { mean, variance } = await moments( f, 0 );
-// 			this.mean = mean;
-// 			this.stddev = variance.pow( .5 );
-// 		}
-// 		return f.sub( this.mean ).div( this.stddev );
-// 	}
+
 
 // 	public train = async () => {
 // 		while ( !this.features ) { await this.waiter(); }
@@ -100,8 +153,8 @@ export class LogisticRegression {
 // 	}
 // }
 
-// export interface LinearRegressionOptions {
-// 	maxIterations?: number,
-// 	learningRate?: number,
-// 	batchSize?: number
-// }
+export interface RegressionOptions {
+	iterations?: number,
+	learningRate?: number,
+	batchSize?: number
+}
